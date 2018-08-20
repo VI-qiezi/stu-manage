@@ -5,12 +5,16 @@ var path = require('path');
 var logger = require('morgan');
 
 var session = require("express-session");
+// 我们在设计每一个页面时，可能会存在共用的视图，在开发时，为了不重复编写代码，我们想把共用的视图抽离出来，封装到一个共用的模板中（如layout.ejs）,让每一个页面都继承layout.ejs中公共的视图。而ejs-mate模块就是提供此功能，类似的模块还有express-partial等等，如果不想使用此模块，还可以使用ejs-include
+var engine = require("ejs-mate");
+
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
 var app = express();
 
 // view engine setup
+app.engine("ejs", engine);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
