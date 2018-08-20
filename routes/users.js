@@ -15,8 +15,8 @@ router.post("/login", function(req, res, next){
   var password = req.body.password;
   var type = req.body.type;
   var remember = req.body.remember;
-  console.log(loginName);
-  console.log(password);
+  // console.log(loginName);
+  // console.log(password);
   if (!loginName || !password) {
     res.json({ code: 201, message: '账号或密码不能为空！' });
     return;
