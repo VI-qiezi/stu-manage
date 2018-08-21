@@ -31,7 +31,13 @@ $('.list-group a').parent().removeClass('active');
 $(`.list-group a[href='${activeLink}']`).parent().addClass('active');
 
 $(".panel-title a").attr("aria-expanded", false);
-// closest()方法；
-$(`.list-group a[href='${activeLink}']`).closest(".panel-default").find(".panel-title a").attr("aria-expanded", true);
 $(".panel-collapse").removeClass("in");
-$(`.list-group a[href='${activeLink}']`).closest(".panel-collapse").addClass("in");
+
+if ($(`.list-group a[href='${activeLink}']`).length == 0) {
+    $(".panel-title:first a").attr("aria-expanded", true);
+    $(".panel-collapse:first").addClass("in");
+} else {
+    // closest()方法；
+    $(`.list-group a[href='${activeLink}']`).closest(".panel-default").find(".panel-title a").attr("aria-expanded", true);
+    $(`.list-group a[href='${activeLink}']`).closest(".panel-collapse").addClass("in");
+}
