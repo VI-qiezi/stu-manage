@@ -1,9 +1,7 @@
 function checkLogin(req, res, next) {
     if (!req.session.user) {
-        if(!res.cookie("user")){
-            res.render('login', { title: "登录" });
-            return;
-        }
+        res.render('login', { title: "登录" });
+        return;
     }
 
     next();

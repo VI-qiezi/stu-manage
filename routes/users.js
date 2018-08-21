@@ -5,6 +5,7 @@ var pool = require("../modules/db.js");
 var md5 = require("md5");
 
 router.get('/login', function(req, res, next) {
+  
   res.render('login', {
     title: "登录"
   })
@@ -61,6 +62,14 @@ router.post("/login", function(req, res, next){
     req.session.save();
     res.cookie("user", user);
     // console.log(user);
+
+    if(remember == "true"){
+      res.cookie("loginName", user.loginName);
+    } else {
+      res.clearCookie("loginName");
+    }
+    // typeof用来判断值类型，instanceof用来判断引用类型
+    console.log(typeof remember);
     res.json({
       code: 200,
       message: "登陆成功！"

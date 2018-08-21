@@ -44,9 +44,9 @@
                         <label for="type" class="col-sm-4 control-label">类型</label>
                         <div class="col-sm-8">
                             <select class="form-control" id="type">
-                                <option value="2">学生</option>
                                 <option value="0">超级管理员</option>
                                 <option value="1">教师</option>
+                                <option value="2">学生</option>
                             </select>
                         </div>
                     </div>
@@ -93,11 +93,16 @@
 
     <!-- jQuery (Bootstrap 的所有 JavaScript 插件都依赖 jQuery，所以必须放在前边) -->
     <script src="/javascripts/jquery.min.js"></script>
+    <script src="/javascripts/jquery.cookie.min.js"></script>
     <!-- 加载 Bootstrap 的所有 JavaScript 插件。你也可以根据需要只加载单个插件。 -->
     <script src="/javascripts/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
 
     <script>
         $(function () {
+            // console.log($.cookie("loginName"));
+            if ($.cookie("loginName")) {
+                $("#loginName").val($.cookie("loginName"));
+            }
             $("#btnLogin").click(function (ev) {
                 ev.preventDefault();
                 var loginName = $.trim($("#loginName").val());
@@ -113,7 +118,7 @@
                 var type = $("#type").val();
                 var remember = $("#remember").prop("checked");
 
-                $.post("/login", {loginName, password, type, remember}, function (data) {
+                $.post("/login", { loginName, password, type, remember }, function (data) {
                     // console.log(data);
                     if (data.code != 200) {
                         $("#myModal .modal-body").text(data.message);
