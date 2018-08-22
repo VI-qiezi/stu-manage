@@ -22,10 +22,13 @@ $("#btnSave").click(function (e) {
     var qq = $.trim($("#qq").val());
     var phone = $.trim($("#phone").val());
     var email = $.trim($("#email").val());
+    // input输入框中没有写id的情况
+    // var id = $("input[type='hidden']").val();
+    var id = $("#id").val();
     var data = {
-        sno, name, sex, birthday, card, majorId, classId, departId, nativePlace, address, qq, phone, email
+        id, sno, name, sex, birthday, card, majorId, classId, departId, nativePlace, address, qq, phone, email
     }
-    $.post("/students/add", data, function (d) {
+    $.post("/students/edit", data, function (d) {
         if (d.code != 200) {
             $("#myModal .modal-body").text(d.message);
             $("#myModal").modal();
