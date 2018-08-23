@@ -21,7 +21,6 @@
 
 <body>
     <div class="container pt50">
-
         <div class="panel panel-default w500">
             <div class="panel-heading">
                 <h3 class="panel-title">登录</h3>
@@ -95,6 +94,7 @@
     <script src="/javascripts/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
     <script>
         $(function () {
+            // 客户端判断
             if($.cookie('loginName')){
                 $('#loginName').val($.cookie('loginName'))
             }
@@ -113,12 +113,12 @@
                 var remember = $('#remember').prop('checked');
 
                 $.post("/login", { loginName, password, type, remember }, function (data) {
+                    console.log(data);
                     if (data.code != 200) {
                         $('#myModal .modal-body').text(data.message);
                         $('#myModal').modal();
                         return;
                     }
-
                     location.href = "/";
                 })
             })

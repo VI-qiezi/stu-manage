@@ -4,6 +4,7 @@ var router = express.Router();
 var pool = require("../modules/db.js");
 var md5 = require("md5");
 var checkLogin = require("../modules/checkLogin.js");
+var pager = require("../modules/pager.js");
 
 router.get("/add", checkLogin, function (req, res, next) {
     var sql = `
@@ -82,12 +83,14 @@ router.get("/list", checkLogin, function (req, res, next) {
     SELECT * FROM majors WHERE status=0;
     SELECT * FROM classes WHERE status=0;
     SELECT * FROM departments WHERE status=0;
+    SELECT COUNT(*) AS totalCount FROM students;
     SELECT s.id,s.sno,s.name,s.sex,s.birthday,s.card,s.majorId,s.classId,s.departId,s.nativePlace,s.address,s.qq,s.phone,s.email,s.status,s.createTime,s.createUserId,s.updateTime,s.updateUserId, d.name as departName, m.name as majorName, c.name as className, u1.loginName as createUserName, u2.loginName as updateUserName FROM students s
     LEFT JOIN departments d ON s.departId = d.id
     LEFT JOIN majors m ON s.majorId = m.id
     LEFT JOIN classes c ON s.classId = c.id
     LEFT JOIN users u1 ON s.createUserId = u1.id
-    LEFT JOIN users u2 ON s.updateUserId = u2.id WHERE (1=1)`;
+    LEFT JOIN users u2 ON s.updateUserId = u2.id WHERE (1=1)
+    `;
     var sno = req.query.sno;
     var name = req.query.name;
     var sex = req.query.sex;
@@ -98,62 +101,95 @@ router.get("/list", checkLogin, function (req, res, next) {
     var birthdayBegin = req.query.birthdayBegin;
     var birthdayEnd = req.query.birthdayEnd;
     var card = req.query.card;
-    if(sno){
+    if (sno) {
         sql += ` AND s.sno LIKE '%${sno}%'`;
     }
-    if(name){
+    if (name) {
         sql += ` AND s.name LIKE '%${name}%'`;
     }
-    if(sex && sex != -1){
+    if (sex && sex != -1) {
         sql += ` AND s.sex = '${sex}'`;
     }
-    if(majorId && majorId != -1){
+    if (majorId && majorId != -1) {
         sql += ` AND s.majorId = '${majorId}'`;
     }
-    if(classId && classId != -1){
+    if (classId && classId != -1) {
         sql += ` AND s.classId = '${classId}'`;
     }
-    if(departId && departId != -1){
+    if (departId && departId != -1) {
         sql += ` AND s.departId = '${departId}'`;
     }
-    if(status && status != -1){
+    if (status && status != -1) {
         sql += ` AND s.status = '${status}'`;
     }
-    if(birthdayBegin && birthdayEnd){
-        try{
+    if (birthdayBegin && birthdayEnd) {
+        try {
             var begin = new Date(birthdayBegin);
             var end = new Date(birthdayEnd);
-            if(begin >= end){
+            if (begin >= end) {
                 sql += ` AND s.birthday >= '${birthdayEnd}' AND s.birthday <= '${birthdayBegin}'`;
             } else {
                 sql += ` AND s.birthday >= '${birthdayBegin}' AND s.birthday <= '${birthdayEnd}'`;
             }
         } catch (error) {
-            res.json({code:201, message: "日期输入有误！"});
+            res.json({ code: 201, message: "日期输入有误！" });
             return;
         }
-        
+
     } else {
-        if(birthdayBegin){
+        if (birthdayBegin) {
             sql += ` AND s.birthday >= '${birthdayBegin}'`;
         }
-        if(birthdayEnd){
+        if (birthdayEnd) {
             sql += ` AND s.birthday <= '${birthdayEnd}'`;
         }
     }
-    if(card){
+    if (card) {
         sql += ` AND s.card LIKE '%${card}%'`;
     }
+
+    var page = req.query.page || 1;
+    page = page - 0;
+    var pageSize = 10;
+    /* (page - 1)*pageSize,pageSize
+    0,10
+    10,10
+    20,10 */
+    sql += ` LIMIT ${(page - 1) * pageSize}, ${pageSize}`;
+
     pool.query(sql, function (err, result) {
         if (err) {
             res.json({ code: 201, message: "数据库操作异常！" });
             return;
         }
-        res.render("students/list", { title: "学生列表", students: result[3], majors: result[0], classes: result[1], departs: result[2] });
+        // 去当前表中数据的总记录数，从而得到总页数
+        var totalCount = result[3][0].totalCount;
+        var totalPage = Math.ceil(totalCount / pageSize);
+        /* console.log(pager(1, totalPage));
+        console.log(pager(2, totalPage));
+        console.log(pager(3, totalPage));
+        console.log(pager(4, totalPage));
+        console.log(pager(5, totalPage));
+        console.log(pager(6, totalPage));
+        console.log(pager(7, totalPage));
+        console.log(pager(8, totalPage)); */
+        var pages = pager(page,totalPage);
+        res.render("students/list", { 
+            title: "学生列表", 
+            students: result[4], 
+            majors: result[0], 
+            classes: result[1], 
+            departs: result[2], 
+            pageInfo: {
+            page,  //当前页数
+            pages,  //在视图上显示的页码范围
+            pageSize,  //每页显示的个数
+            totalPage,  //总页数
+            totalCount  //总记录数
+            } 
+        })
     })
-
 })
-
 // :id占位符，可以理解成把客户端传过来的数据放到id变量中
 router.get("/edit/:id", checkLogin, function (req, res, next) {
     // params=parameters 参数
@@ -179,7 +215,7 @@ router.get("/edit/:id", checkLogin, function (req, res, next) {
         })
 })
 
-router.post("/edit", checkLogin, function(req, res, next){
+router.post("/edit", checkLogin, function (req, res, next) {
     var id = req.body.id;
     var sno = req.body.sno;
     var name = req.body.name;
@@ -200,56 +236,60 @@ router.post("/edit", checkLogin, function(req, res, next){
         res.json({ code: 201, message: "id，学号，姓名，性别，生日，身份证号，所学专业，所属班级，所属院系不能为空！" });
         return;
     }
-    pool.query(`SELECT * FROM students WHERE id=?`, [id], function(err, result){
+    
+    pool.query(`SELECT * FROM students WHERE id=?;
+    SELECT sno FROM students;
+    `, [id], function (err, result) {
         if (err) {
             res.json({ code: 202, message: "数据库操作异常！" });
             return;
         }
-        if (result[0].length > 1 || result[0].length < 1) {
+        if (result[0][0].length > 1 || result[0][0].length < 1) {
             res.json({ code: 203, message: "你编辑的学生不存在！" });
             return;
         }
+        
         var sql = `
         UPDATE students SET sno=?,name=?,sex=?,birthday=?,card=?,majorId=?,classId=?,departId=?,nativePlace=?,address=?,qq=?,phone=?,email=?,updateTime=?,updateUserId=? WHERE id=?`;
         var data = [sno, name, sex, birthday, card, majorId, classId, departId, nativePlace, address, qq, phone, email, new Date(), req.session.user.id, id];
-        pool.query(sql, data, function(err, result1){
+        pool.query(sql, data, function (err, result1) {
             if (err) {
-                res.json({ code: 202, message: "数据库操作异常！" });
+                res.json({ code: 205, message: "数据库操作异常！" });
                 return;
             }
-            res.json({code:200, message: "修改成功！"});
+            res.json({ code: 200, message: "修改成功！" });
         })
     })
 })
 
-router.post("/remove", checkLogin, function(req, res, next){
+router.post("/remove", checkLogin, function (req, res, next) {
     var id = req.body.id;
-    if(!id){
-        res.json({code: 201, message: "参数错误！"});
+    if (!id) {
+        res.json({ code: 201, message: "参数错误！" });
         return;
     }
     // console.log(id);
-    pool.query(`UPDATE students SET status=1 WHERE id=?`, [id], function(err, result){
-        if(err){
-            res.json({code: 202, message: "数据库操作异常！"});
+    pool.query(`UPDATE students SET status=1 WHERE id=?`, [id], function (err, result) {
+        if (err) {
+            res.json({ code: 202, message: "数据库操作异常！" });
             return;
         }
-        res.json({code:200, message: "删除成功！"});
+        res.json({ code: 200, message: "删除成功！" });
     })
 })
 
-router.post("/multiRemove", checkLogin, function(req, res, next){
+router.post("/multiRemove", checkLogin, function (req, res, next) {
     var ids = req.body.ids;
-    if(!ids){
-        res.json({code: 201, message: "参数错误！"});
+    if (!ids) {
+        res.json({ code: 201, message: "参数错误！" });
         return;
     }
-    pool.query(`UPDATE students SET status=1 WHERE id IN (${ids})`, function(err, result){
-        if(err){
-            res.json({code: 202, message: "数据库操作异常！"});
+    pool.query(`UPDATE students SET status=1 WHERE id IN (${ids})`, function (err, result) {
+        if (err) {
+            res.json({ code: 202, message: "数据库操作异常！" });
             return;
         }
-        res.json({code:200, message: "删除成功！"});
+        res.json({ code: 200, message: "删除成功！" });
     })
 })
 module.exports = router;
