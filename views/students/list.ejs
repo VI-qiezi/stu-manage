@@ -13,6 +13,10 @@
         #search .form-group {
             margin: 5px auto;
         }
+
+        table th,td{
+            text-align: center;
+        }
     </style>
     <div class="panel-group" id="search" role="tablist" aria-multiselectable="true">
         <div class="panel panel-default">
@@ -151,7 +155,7 @@
                         <td style="text-align: center;">
                             <input type="checkbox" class="selectSingle" title="选中" data-id="<%=students[i].id%>">
                         </td>
-                        <td style="width: 100px;">
+                        <td>
                             <%= students[i].sno %>
                         </td>
                         <td>
@@ -193,9 +197,9 @@
                         <td>
                             <% if(students[i].status == 0) { %>
                                 正常
-                                <% } else { %>
-                                    <span style="color: red">删除</span>
-                                    <% } %>
+                            <% } else { %>
+                                <span style="color: red">删除</span>
+                            <% } %>
                         </td>
                         <!-- <td>
                             <%= formatDate(students[i].createTime, true) %>
