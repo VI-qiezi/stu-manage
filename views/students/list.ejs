@@ -14,7 +14,8 @@
             margin: 5px auto;
         }
 
-        table th,td{
+        table th,
+        td {
             text-align: center;
         }
     </style>
@@ -22,19 +23,19 @@
         <div class="panel panel-default">
             <div class="panel-heading" role="tab" id="title">
                 <h4 class="panel-title">
-                    <a role="button" data-toggle="collapse" data-parent="#search" href="#collapseSearch" aria-expanded="true" aria-controls="collapseSearch" style="margin-right: 960px">
+                    <a role="button" data-toggle="collapse" data-parent="#search" href="#collapseSearch" aria-expanded="true" aria-controls="collapseSearch"
+                        style="margin-right: 950px">
                         查询条件
                     </a>
-                    <a class="btn btn-success btn-xs" href="#" role="button" style="padding: 3px 5px" id="btnAdd">
+                    <a class="btn btn-success btn-xs" href="/students/add" role="button" style="padding: 3px 5px">
                         <span class="glyphicon glyphicon glyphicon-plus" aria-hidden="true"></span>
                         添加
                     </a>
                 </h4>
-                
             </div>
             <div id="collapseSearch" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="title">
                 <div class="panel-body">
-                    <form class="form-inline" action="/students/list">
+                    <form class="form-inline" action="/teachers/list">
                         <div class="form-group">
                             <label for="sno">学号：</label>
                             <input type="text" class="form-control" id="sno" name="sno">
@@ -52,29 +53,29 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="majorId">专业：</label>
+                            <label for="majorId">所属专业：</label>
                             <select class="form-control" id="majorId" name="majorId">
                                 <option value="-1">全部</option>
                                 <% for(var i=0;i<majors.length;i++) { %>
-                                    <option value="<%=majors[i].id%>"><%=majors[i].name%></option>
+                                    <option value="<%= majors[i].id%>"><%= majors[i].name %></option>
                                 <% } %>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="classId">班级：</label>
+                            <label for="classId">所属班级：</label>
                             <select class="form-control" id="classId" name="classId">
                                 <option value="-1">全部</option>
                                 <% for(var i=0;i<classes.length;i++) { %>
-                                    <option value="<%=classes[i].id%>"><%=classes[i].name%></option>
+                                    <option value="<%= classes[i].id%>"><%= classes[i].name %></option>
                                 <% } %>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="departId">院系：</label>
+                            <label for="departId">所属院系：</label>
                             <select class="form-control" id="departId" name="departId">
                                 <option value="-1">全部</option>
                                 <% for(var i=0;i<departs.length;i++) { %>
-                                    <option value="<%=departs[i].id%>"><%=departs[i].name%></option>
+                                    <option value="<%= departs[i].id%>"><%= departs[i].name %></option>
                                 <% } %>
                             </select>
                         </div>
@@ -97,7 +98,7 @@
                             <input type="text" class="form-control" id="card" name="card">
                         </div>
 
-                        <button type="submit" class="btn btn-primary">
+                        <button type="submit" class="btn btn-primary" style="margin-left: 10px">
                             <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
                             搜索
                         </button>
@@ -197,9 +198,9 @@
                         <td>
                             <% if(students[i].status == 0) { %>
                                 正常
-                            <% } else { %>
-                                <span style="color: red">删除</span>
-                            <% } %>
+                                <% } else { %>
+                                    <span style="color: red">删除</span>
+                                    <% } %>
                         </td>
                         <!-- <td>
                             <%= formatDate(students[i].createTime, true) %>
@@ -218,13 +219,13 @@
                                 <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
                                 编辑
                             </a>
-                            <a class="btn btn-danger btn-xs remove" href="javascript:void(0);" role="button"   data-id="<%= students[i].id %>">
+                            <a class="btn btn-danger btn-xs remove" href="javascript:void(0);" role="button" data-id="<%= students[i].id %>">
                                 <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
                                 删除
                             </a>
                         </td>
                     </tr>
-                <% } %>
+                    <% } %>
             </table>
         </div>
 
@@ -244,53 +245,57 @@
                                 <a href="javascript:void(0);" aria-label="First">
                                     <span aria-hidden="true">&lsaquo;</span>
                                 </a>
-                            <% } else { %>
-                                <a href="/students/list?page=1" aria-label="First">
-                                    <span aria-hidden="true">&lsaquo;</span>
-                                </a>
-                            <% } %>
+                                <% } else { %>
+                                    <a href="/students/list?page=1" aria-label="First">
+                                        <span aria-hidden="true">&lsaquo;</span>
+                                    </a>
+                                    <% } %>
                         </li>
                         <li class="<%= pageInfo.page == 1 ? 'disabled' : '' %>">
                             <% if(pageInfo.page == 1) { %>
                                 <a href="javascript:void(0);" aria-label="Previous">
                                     <span aria-hidden="true">&laquo;</span>
                                 </a>
-                            <% } else { %>
-                                <a href="/students/list?page=<%=pageInfo.page-1%>" aria-label="Previous">
-                                    <span aria-hidden="true">&laquo;</span>
-                                </a>
-                            <% } %>
+                                <% } else { %>
+                                    <a href="/students/list?page=<%=pageInfo.page-1%>" aria-label="Previous">
+                                        <span aria-hidden="true">&laquo;</span>
+                                    </a>
+                                    <% } %>
                         </li>
                         <% for(var i=0;i<pageInfo.pages.length;i++){%>
-                            <li class="<%= pageInfo.page == pageInfo.pages[i] ? 'active' : ''%>"><a href="/students/list?page=<%=pageInfo.pages[i]%>"><%=pageInfo.pages[i]%></a></li>
-                        <% } %>
-                        <li class="<%= pageInfo.page == pageInfo.totalPage ? 'disabled' : '' %>">
-                            <% if(pageInfo.page == pageInfo.totalPage) { %>
-                                <a href="javascript:void(0);" aria-label="Next">
-                                    <span aria-hidden="true">&raquo;</span>
+                            <li class="<%= pageInfo.page == pageInfo.pages[i] ? 'active' : ''%>">
+                                <a href="/students/list?page=<%=pageInfo.pages[i]%>">
+                                    <%=pageInfo.pages[i]%>
                                 </a>
-                            <% }else{ %>
-                                <a href="/students/list?page=<%=pageInfo.page+1%>" aria-label="Next">
-                                    <span aria-hidden="true">&raquo;</span>
-                                </a>
+                            </li>
                             <% } %>
-                            
-                        </li>
-                        <li class="<%= pageInfo.page == pageInfo.totalPage ? 'disabled' : '' %>">
-                            <% if(pageInfo.page == pageInfo.totalPage) { %>
-                                <a href="javascript:void(0);" aria-label="Last">
-                                    <span aria-hidden="true">&rsaquo;</span>
-                                </a>
-                            <% } else {%>
-                                <a href="/students/list?page=<%=pageInfo.totalPage%>" aria-label="Last">
-                                    <span aria-hidden="true">&rsaquo;</span>
-                                </a>
-                            <% } %>
-                            
-                        </li>
+                                <li class="<%= pageInfo.page == pageInfo.totalPage ? 'disabled' : '' %>">
+                                    <% if(pageInfo.page == pageInfo.totalPage) { %>
+                                        <a href="javascript:void(0);" aria-label="Next">
+                                            <span aria-hidden="true">&raquo;</span>
+                                        </a>
+                                        <% }else{ %>
+                                            <a href="/students/list?page=<%=pageInfo.page+1%>" aria-label="Next">
+                                                <span aria-hidden="true">&raquo;</span>
+                                            </a>
+                                            <% } %>
+
+                                </li>
+                                <li class="<%= pageInfo.page == pageInfo.totalPage ? 'disabled' : '' %>">
+                                    <% if(pageInfo.page == pageInfo.totalPage) { %>
+                                        <a href="javascript:void(0);" aria-label="Last">
+                                            <span aria-hidden="true">&rsaquo;</span>
+                                        </a>
+                                        <% } else {%>
+                                            <a href="/students/list?page=<%=pageInfo.totalPage%>" aria-label="Last">
+                                                <span aria-hidden="true">&rsaquo;</span>
+                                            </a>
+                                            <% } %>
+
+                                </li>
                     </ul>
                 </nav>
             </div>
         </div>
 
-<% block('footer').append('<script src="/javascripts/stu-list.js"></script>') -%>
+        <% block('footer').append('<script src="/javascripts/stu-list.js"></script>') -%>

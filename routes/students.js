@@ -237,14 +237,12 @@ router.post("/edit", checkLogin, function (req, res, next) {
         return;
     }
     
-    pool.query(`SELECT * FROM students WHERE id=?;
-    SELECT sno FROM students;
-    `, [id], function (err, result) {
+    pool.query(`SELECT * FROM students WHERE id=?`, [id], function (err, result) {
         if (err) {
             res.json({ code: 202, message: "数据库操作异常！" });
             return;
         }
-        if (result[0][0].length > 1 || result[0][0].length < 1) {
+        if (result[0].length > 1 || result[0].length < 1) {
             res.json({ code: 203, message: "你编辑的学生不存在！" });
             return;
         }
@@ -254,7 +252,7 @@ router.post("/edit", checkLogin, function (req, res, next) {
         var data = [sno, name, sex, birthday, card, majorId, classId, departId, nativePlace, address, qq, phone, email, new Date(), req.session.user.id, id];
         pool.query(sql, data, function (err, result1) {
             if (err) {
-                res.json({ code: 205, message: "数据库操作异常！" });
+                res.json({ code: 204, message: "数据库操作异常！" });
                 return;
             }
             res.json({ code: 200, message: "修改成功！" });
